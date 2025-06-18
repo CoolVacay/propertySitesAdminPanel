@@ -1,32 +1,38 @@
-// app/page.tsx  (or wherever your Home component lives)
-
-"use client"; // because we’re using hooks
+"use client";
 
 import { useState, useEffect } from "react";
+import { useUser, useClerk } from "@clerk/nextjs";
 import PropertyJsonEditor from "./PropertyJsonEditor";
+
 const DUMMY_PROPS = [
   { id: "http://localhost:3000/", name: "Local Host" },
-  { id: "https://property-sites.vercel.app/", name: "Inn at camache" },
+  { id: "https://property-sites.vercel.app/", name: "Inn at Camache" },
+];
+
+// 🎯 your allow-list:
+const ALLOWED_EMAILS = [
+  "toni.gashi@lj-support.com",
+  "Amy.Dobson@lemonjuice.biz",
 ];
 
 export default function Home() {
+  const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
   const [selectedId, setSelectedId] = useState(DUMMY_PROPS[0].id);
 
-  // useEffect(() => {
-  //   // 1. Replace this with your real “list all properties” endpoint
-  //   fetch("/api/properties")
-  //     .then((res) => {
-  //       if (!res.ok) throw new Error(res.statusText);
-  //       return res.json();
-  //     })
-  //     .then((data) => {
-  //       setProperties(data);
-  //       if (data.length) setSelectedId(data[0].id);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Failed to load properties:", err);
-  //     });
-  // }, []);
+  // once Clerk has loaded the user, check email and kick out if not allowed
+  useEffect(() => {
+    if (!isLoaded || !user) return;
+
+    const primaryEmail = user.emailAddresses
+      .find((e) => e.id === user.primaryEmailAddressId)
+      ?.emailAddress.toLowerCase();
+
+    if (primaryEmail && !ALLOWED_EMAILS.includes(primaryEmail)) {
+      // log them out immediately
+      signOut();
+    }
+  }, [isLoaded, user, signOut]);
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
@@ -43,7 +49,7 @@ export default function Home() {
         className="mb-6 w-full p-2 border border-gray-300 rounded"
       >
         {DUMMY_PROPS.map((prop) => (
-          <option key={prop.id} value={prop.id} className="text-black">
+          <option key={prop.id} value={prop.id}>
             {prop.name}
           </option>
         ))}
