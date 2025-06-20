@@ -12,7 +12,7 @@ const DUMMY_PROPS = [
 // 🎯 your allow-list:
 const ALLOWED_EMAILS = [
   "toni.gashi@lj-support.com",
-  "Amy.Dobson@lemonjuice.biz",
+  "amy.dobson@lemonjuice.biz",
 ];
 
 export default function Home() {
