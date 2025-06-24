@@ -49,7 +49,7 @@ export default function Home() {
         className="mb-6 w-full p-2 border border-gray-300 rounded"
       >
         {DUMMY_PROPS.map((prop) => (
-          <option key={prop.id} value={prop.id}>
+          <option key={prop.id} value={prop.id} className="text-black">
             {prop.name}
           </option>
         ))}
